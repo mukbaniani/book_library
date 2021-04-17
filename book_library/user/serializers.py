@@ -1,13 +1,15 @@
 from rest_framework import serializers
 from .models import User
+from django.contrib.auth import authenticate
+from django.utils.translation import gettext_lazy as _
 
 class UserSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(style={'input_type': 'password'},
     write_only=True, 
-    label='პაროლი')
+    label=_('პაროლი'))
     password2 = serializers.CharField(style={'input_type': 'password'}, 
     write_only=True,
-    label='გაიმეორეთ პაროლი')
+    label=_('გაიმეორეთ პაროლი'))
 
     class Meta:
         model = User
@@ -31,3 +33,36 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password1)
         user.save()
         return user
+
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(
+        label=_('მეილი'),
+        write_only=True
+    )
+    password = serializers.CharField(
+        label=_('პაროლი'),
+        write_only=True,
+        style={'input_type':'password'}
+    )
+    token = serializers.CharField(
+        label=_('token'),
+        read_only=True
+    )
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+
+        if email and password:
+            user = authenticate(request=self.context.get('request'), 
+                                email=email, password=password)
+            if not user:
+                error_message = 'მსგავსი მომხმარებელი არ მოიძებნა'
+                raise serializers.ValidationError(error_message)
+        else:
+            error_message = 'მეილის და პაროლის შევსება აუცილებელია'
+            raise serializers.ValidationError(error_message)
+
+        attrs['user'] = user
+        return attrs

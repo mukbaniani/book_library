@@ -1,10 +1,9 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import UserSerializer
+from .serializers import UserSerializer, LoginSerializer
 from .models import User
 from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.serializers import AuthTokenSerializer
 
 class Registration(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -19,7 +18,7 @@ class Registration(generics.CreateAPIView):
 
 
 class Login(generics.CreateAPIView):
-    serializer_class = AuthTokenSerializer
+    serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'request': request})
