@@ -126,6 +126,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
+LANGUAGE_CODE = 'ka-us'
+USE_I18N = True
+USE_L10N = True
 
 AUTH_USER_MODEL = 'user.User'

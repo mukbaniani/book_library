@@ -5,6 +5,8 @@ from django.core.validators import RegexValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
+from django.core.validators import RegexValidator
+
 
 
 class MyUserManager(BaseUserManager):
@@ -44,17 +46,16 @@ class MyUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-
+mobile_validator=RegexValidator(r'\(514|551|555|557|558|559|568|570|571|574|577|579|591|592|593|595|596|597|598|599)\d{6}')
 class User(AbstractUser):
     username = None
     email = models.EmailField(unique=True, verbose_name=_('მეილი'))
-    phone = models.CharField(max_length=30, verbose_name=_('ტელეფონის ნომერი'), 
-    validators=[RegexValidator(r'\d')])
+    phone = models.CharField(max_length=30,validators=[mobile_validator], verbose_name=_('ტელეფონის ნომერი'))
     address = models.CharField(max_length=50, verbose_name=_('მისამართი'))
     first_name = models.CharField(max_length=20, verbose_name=_('სახელი'))
     last_name = models.CharField(max_length=25, verbose_name=_('გვარი'))
-    passport_id = models.CharField(max_length=11, verbose_name=_('პირადი ნომერი'), 
-    validators=[RegexValidator(r'\d')])
+    passport_id = models.CharField(max_length=11, verbose_name=_('პირადი ნომერი'))
+
 
     object = MyUserManager()
     USERNAME_FIELD = 'email'
