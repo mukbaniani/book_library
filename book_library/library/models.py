@@ -21,7 +21,11 @@ class Branch(models.Model):
 
     def __str__(self):
         return self.address
-    
+
+
+    class Meta:
+        verbose_name = 'ფილიალები'
+        ordering = ['-id']
 
 
 class Book(models.Model):
@@ -33,21 +37,27 @@ class Book(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'წიგნები'
+        ordering = ['-id']
+
 
 class Order(models.Model):
     book=models.ManyToManyField(Book, verbose_name=_('წიგნი'))
     user=models.OneToOneField(User,on_delete=models.CASCADE, verbose_name=_('მომხმარებელი'))
     branch=models.ForeignKey(Branch,on_delete=models.CASCADE, verbose_name=_('ფილიალი'))
     start_date=models.DateField(verbose_name=_('შეკვეთის დრო'))
-    end_date=models.DateField(verbose_name=_('დაბრუნების დრო'))
+    end_date=models.DateField(verbose_name=_('დაბრუნების დრო'), blank=True, null=True)
 
     def __str__(self):
-        return self.book.name
+        return f'{self.user}'
 
     def save(self, *args, **kwargs):
         today = datetime.datetime.now()
         if not self.pk:
-            self.book.quantity -= 1
-            self.book.save()
             self.end_date = today + datetime.timedelta(days=14)
         super(Order, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = 'შეკვეთები'
+        ordering = ['-id']
