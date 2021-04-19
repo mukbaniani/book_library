@@ -6,6 +6,14 @@ from .serializers import UserSerializer, LoginSerializer
 from .models import User
 from rest_framework.authtoken.models import Token
 
+class PostAnononymousRateThrottle(throttling.AnonRateThrottle):
+    scope = 'post_anon'
+    def allow_request(self, request, view):
+        if request.method == "GET":
+            return True
+        return super().allow_request(request, view)
+
+
 class Registration(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -20,7 +28,7 @@ class Registration(generics.CreateAPIView):
 
 class Login(generics.CreateAPIView):
     serializer_class = LoginSerializer
-    throttle_classes = [throttling.AnonRateThrottle]
+    throttle_classes = [PostAnononymousRateThrottle]
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'request': request})
