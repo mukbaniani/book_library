@@ -1,4 +1,5 @@
 from rest_framework import generics, status
+from rest_framework import throttling
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, LoginSerializer
@@ -19,6 +20,7 @@ class Registration(generics.CreateAPIView):
 
 class Login(generics.CreateAPIView):
     serializer_class = LoginSerializer
+    throttle_classes = [throttling.AnonRateThrottle]
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'request': request})
