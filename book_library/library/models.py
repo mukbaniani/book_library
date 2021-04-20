@@ -48,6 +48,7 @@ class Order(models.Model):
     branch=models.ForeignKey(Branch,on_delete=models.CASCADE, verbose_name=_('ფილიალი'))
     start_date=models.DateField(verbose_name=_('შეკვეთის დრო'))
     end_date=models.DateField(verbose_name=_('დაბრუნების დრო'), blank=True, null=True)
+    status = models.BooleanField(verbose_name=_('დაბრუნება'), default=False)
 
     def __str__(self):
         return f'{self.user}'
