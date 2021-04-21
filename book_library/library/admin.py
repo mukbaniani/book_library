@@ -1,5 +1,5 @@
 from django.contrib import admin
-from  .models import Branch, Book, Order
+from  .models import Branch, Book, Order,History
 import datetime
 
 admin.site.index_title = 'ბიბლიოთეკარი'
@@ -31,8 +31,7 @@ class OrderAdminArea(admin.ModelAdmin):
     list_per_page = 10
     list_display = ('user', 'start_date', 'end_date', 'count_return_date', 'status')
     list_display_links = ('user', 'start_date')
-    list_editable = ['end_date', 'status']
-    autocomplete_fields = ['book', 'user', 'branch']
+    autocomplete_fields = ['book']
     list_filter = ['status']
 
     def count_return_date(self, obj):
@@ -40,6 +39,9 @@ class OrderAdminArea(admin.ModelAdmin):
         if count_date < 0 and obj.status is False:
             return 'დააგვიანა'
         elif obj.status is True:
-            return 'დაბრუნებულია'
+            return 'დააბრუნა'
         return f'{count_date} დღე'
     count_return_date.short_description = 'დაბრუნებდამდე დარჩა'
+
+
+admin.site.register(History)
