@@ -66,3 +66,52 @@ class LoginSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField(
+        label = _('პაროლის აღსადგენად შეიყვანეთ მეილი'),
+        write_only=True
+    )
+    
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+
+        if email:
+            user = User.objects.filter(email=email).first()
+            if not user:
+                error_message = 'მეილი ვერ მოიძებნა'
+                raise serializers.ValidationError(error_message)
+        else:
+            error_message = 'პაროლის განსაახლებლად მეილის შეყვანა აუცილებელია'
+            raise serializers.ValidationError(error_message)
+
+        attrs['user'] = user
+        return attrs
+
+
+class PasswordReset(serializers.Serializer):
+    password1 = serializers.CharField(
+        label=_('შეიყვანეთ ახალი პაროლი'),
+        write_only = True,
+        style={'input_type': 'password'}
+    )
+    password2 = serializers.CharField(
+        label=_('გაიმეორეთ პაროლი'),
+        write_only = True,
+        style = {'input_type': 'password'}
+    )
+
+    def validate(self, attrs):
+        password1 = attrs.get('password1')
+        password2 = attrs.get('password2')
+
+        if password1 and password2:
+            if password1 != password2:
+                error_message = 'პაროლი არ ემთხვევა'
+                raise serializers.ValidationError(error_message)
+        else:
+            error_message = 'პაროლის ველის შევსება აუცილებელია'
+            raise serializers.ValidationError(error_message)
+        return attrs

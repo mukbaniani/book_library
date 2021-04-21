@@ -46,11 +46,11 @@ class MyUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-mobile_validator=RegexValidator(r'\(514|551|555|557|558|559|568|570|571|574|577|579|591|592|593|595|596|597|598|599)\d{6}')
+# mobile_validator=RegexValidator(r'\(514|551|555|557|558|559|568|570|571|574|577|579|591|592|593|595|596|597|598|599)\d{6}')
 class User(AbstractUser):
     username = None
     email = models.EmailField(unique=True, verbose_name=_('მეილი'))
-    phone = models.CharField(max_length=30,validators=[mobile_validator], verbose_name=_('ტელეფონის ნომერი'))
+    phone = models.CharField(max_length=30,validators=[], verbose_name=_('ტელეფონის ნომერი'))
     address = models.CharField(max_length=50, verbose_name=_('მისამართი'))
     first_name = models.CharField(max_length=20, verbose_name=_('სახელი'))
     last_name = models.CharField(max_length=25, verbose_name=_('გვარი'))
