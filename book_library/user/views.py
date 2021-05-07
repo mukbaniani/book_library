@@ -9,10 +9,18 @@ from .models import User
 from rest_framework.authtoken.models import Token
 from .email import Mail
 from .tokens import decode_reset_token
+from rest_framework import permissions
+
+
+class UserPermissions(permissions.BasePermission):
+    
+    def has_permission(self, request, view):
+        return not bool(request.user.is_authenticated)
 
 
 class PostAnononymousRateThrottle(throttling.AnonRateThrottle):
     scope = 'post_anon'
+
     def allow_request(self, request, view):
         if request.method == "GET":
             return True
@@ -22,6 +30,7 @@ class PostAnononymousRateThrottle(throttling.AnonRateThrottle):
 class Registration(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [UserPermissions]
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -34,6 +43,7 @@ class Registration(generics.CreateAPIView):
 class Login(generics.CreateAPIView):
     serializer_class = LoginSerializer
     throttle_classes = [PostAnononymousRateThrottle]
+    permission_classes = [UserPermissions]
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'request': request})
@@ -46,6 +56,8 @@ class Login(generics.CreateAPIView):
 
 
 class Logout(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     def get(self, request, format=None):
         request.user.auth_token.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -54,6 +66,7 @@ class Logout(APIView):
 class PasswordResetRequest(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = PasswordResetRequestSerializer
+    permission_classes = [UserPermissions]
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -66,16 +79,30 @@ class PasswordResetRequest(generics.CreateAPIView):
         })        
 
 
-class PasswordUpdate(generics.CreateAPIView):
+class PasswordUpdate(generics.RetrieveUpdateAPIView):
     serializer_class = PasswordReset
     queryset = User.objects.all()
+    permission_classes = [UserPermissions]
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         user_id = decode_reset_token(self.kwargs.get('uidb64'))
+        currect_site = get_current_site(request)
+        if not User.objects.filter(pk=user_id).exists():
+            return HttpResponseRedirect(f'http://{currect_site}/api/login/')
+        else:
+            return Response({'result': 'update your password'}, status=status.HTTP_200_OK)
+
+
+    def put(self, request, *args, **kwargs):
+        user_id = decode_reset_token(self.kwargs.get('uidb64'))
+        current_site = get_current_site(request)
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = User.objects.filter(pk=user_id).first()
         password = serializer.validated_data.get('password1')
-        user.set_password(password)
-        user.save()
-        return HttpResponseRedirect(f'{get_current_site}/api/login/')
+        try:
+            user.set_password(password)
+            user.save()
+            return HttpResponseRedirect(f'http://{current_site}/api/login/')
+        except:
+            return Response({'result': 'პაროლის განსაახლებელ ტოკენს დრო გაუვიდა სცადეთ თავიდან'})

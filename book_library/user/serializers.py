@@ -3,6 +3,7 @@ from .models import User
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 
+
 class UserSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(style={'input_type': 'password'},
     write_only=True, 
@@ -16,8 +17,15 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['email', 'first_name', 'last_name', 'phone', 'address', 'passport_id', 'password1', 'password2']
 
     def validate(self, attrs):
-        if attrs.get('password1') != attrs.get('password2'):
-            raise serializers.ValidationError('პაროლი ერთნამენთს არ ემთხვევა')
+        password1 = attrs.get('password1')
+        password2 = attrs.get('password2')
+        if password1 == password2:
+            if len(password1) < 8:
+                error_message = 'მინიმალური ასეობის რაოდენობა 8'
+                raise serializers.ValidationError(error_message)
+        if password1 != password2:
+            error_message = 'პაროლი ერთნამენთს არ ემთხვევა'
+            raise serializers.ValidationError(error_message)
         return attrs
 
     def create(self, validated_data):
@@ -106,6 +114,11 @@ class PasswordReset(serializers.Serializer):
     def validate(self, attrs):
         password1 = attrs.get('password1')
         password2 = attrs.get('password2')
+
+        if password2 == password1:
+            if len(password1) < 8:
+                error_message = 'პაროლი მინიმუმ 8 სიმბოლოს უნდა შეიცავდეს'
+                raise serializers.ValidationError(error_message)
 
         if password1 and password2:
             if password1 != password2:

@@ -46,7 +46,7 @@ class MyUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-# mobile_validator=RegexValidator(r'\(514|551|555|557|558|559|568|570|571|574|577|579|591|592|593|595|596|597|598|599)\d{6}')
+
 class User(AbstractUser):
     username = None
     email = models.EmailField(unique=True, verbose_name=_('მეილი'))
