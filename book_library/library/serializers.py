@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import Book,History,Order,Branch
 
-
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model=Book

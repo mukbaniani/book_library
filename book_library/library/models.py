@@ -68,9 +68,9 @@ class Order(models.Model):
 
 class History(models.Model):
     return_time=models.BooleanField(verbose_name=_('დააბრუნა მის დროზე?'))
-    return_book=models.ForeignKey(Book,on_delete=models.CASCADE,verbose_name=_('რომელი წიგნი დააბრუნა'))
-    user=models.ForeignKey(User,on_delete=models.CASCADE,verbose_name=_('მომხმარებელი'))
-    condition=models.IntegerField(default=10,verbose_name=_('წიგნის მდოგმარეობა'))
+    return_book=models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name=_('რომელი წიგნი დააბრუნა'))
+    user=models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('მომხმარებელი'))
+    condition=models.IntegerField(default=10, verbose_name=_('წიგნის მდოგმარეობა'))
 
     def __str__(self):
         return str(self.return_book.name)
@@ -83,3 +83,6 @@ class History(models.Model):
             self.return_book.save()
 
         super(History,self).save(*args,**kwargs)
+
+    class Meta:
+        verbose_name_plural = 'მომხმარებლების ისტორია'

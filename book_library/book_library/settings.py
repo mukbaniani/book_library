@@ -75,7 +75,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.TokenAuthentication'],
     'DEFAULT_THROTTLE_RATES': {
         'post_anon': '10/minute'
-    }
+    },
+    'DEFAULT_FILTER_BACKENDS': ['rest_framework.filters.SearchFilter'],
 }
 
 WSGI_APPLICATION = 'book_library.wsgi.application'
