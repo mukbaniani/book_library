@@ -12,9 +12,19 @@ class BookSerializer(serializers.ModelSerializer):
 class HistorySerializer(serializers.ModelSerializer):
     class Meta:
         model=History
-        fields=['id','return_time','return_book','condition']
+        fields=['id','return_time','return_book','user','condition']
 
-        def get_return_book(self,obj):
-            return obj.return_book.name
+
+    def to_representation(self,instance):
+        rep=super(HistorySerializer,self).to_representation(instance)
+        rep['return_book']=instance.return_book.name
+        rep['user']=instance.user.passport_id
+        return rep
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Order
+        fields=['id','book']
 
 

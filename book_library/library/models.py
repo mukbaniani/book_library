@@ -73,11 +73,13 @@ class History(models.Model):
     condition=models.IntegerField(default=10,verbose_name=_('წიგნის მდოგმარეობა'))
 
     def __str__(self):
-        return self.return_book
+        return str(self.return_book.name)
 
     def save(self,*args,**kwargs):
         if not self.pk:
 
             self.return_book.Condition = self.condition
+            self.return_book.quantity += 1
             self.return_book.save()
+
         super(History,self).save(*args,**kwargs)
