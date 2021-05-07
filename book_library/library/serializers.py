@@ -14,4 +14,7 @@ class HistorySerializer(serializers.ModelSerializer):
         model=History
         fields=['id','return_time','return_book','condition']
 
+        def get_return_book(self,obj):
+            return obj.return_book.name
+
 
