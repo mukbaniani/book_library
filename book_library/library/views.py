@@ -1,6 +1,6 @@
-from rest_framework import generics
-from .serializers import BookSerializer, HistorySerializer
-from .models import Book, History
+from rest_framework import generics, permissions
+from .serializers import BookSerializer, HistorySerializer, OrderSerializer
+from .models import Book, History, Order
 from django.db.models import Count
 
 
@@ -22,3 +22,9 @@ class PopularBook(generics.ListAPIView):
     def get_queryset(self):
         books = Book.objects.annotate(popular_book=Count('order')).order_by('-popular_book')
         return books
+
+
+class OrderCreate(generics.CreateAPIView):
+    serializer_class = OrderSerializer
+    queryset = Order.objects.all()
+    permission_classes = [permissions.IsAuthenticated]

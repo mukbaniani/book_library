@@ -22,8 +22,8 @@ class HistorySerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    start_date = serializers.DateField(format="%Y-%m-%d")
+
     class Meta:
         model=Order
-        fields=['id','book']
-
-
+        fields = ['book', 'user', 'branch', 'start_date']
