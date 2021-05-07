@@ -69,6 +69,7 @@ class Order(models.Model):
 class History(models.Model):
     return_time=models.BooleanField(verbose_name=_('დააბრუნა მის დროზე?'))
     return_book=models.ForeignKey(Book,on_delete=models.CASCADE,verbose_name=_('რომელი წიგნი დააბრუნა'))
+    user=models.ForeignKey(User,on_delete=models.CASCADE,verbose_name=_('მომხმარებელი'))
     condition=models.IntegerField(default=10,verbose_name=_('წიგნის მდოგმარეობა'))
 
     def __str__(self):
