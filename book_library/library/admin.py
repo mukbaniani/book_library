@@ -1,5 +1,5 @@
 from django.contrib import admin
-from  .models import Branch, Book, Order,History
+from  .models import Branch, Book, Order,History,Todo
 import datetime
 
 admin.site.index_title = 'ბიბლიოთეკარი'
@@ -45,3 +45,4 @@ class OrderAdminArea(admin.ModelAdmin):
 
 
 admin.site.register(History)
+admin.site.register(Todo)

@@ -1,6 +1,6 @@
 from rest_framework import generics, permissions
-from .serializers import BookSerializer, HistorySerializer, OrderSerializer
-from .models import Book, History, Order
+from .serializers import BookSerializer, HistorySerializer, OrderSerializer,TodoSerializer
+from .models import Book, History, Order,Todo
 from django.db.models import Count
 
 
@@ -34,3 +34,17 @@ class OrderCreate(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
+
+class TodoCreate(generics.ListCreateAPIView):
+    serializer_class = TodoSerializer
+    queryset = Todo
+    permission_classes = [permissions.IsAuthenticated]
+    search_fields=['name']
+
+    def create(self, request, *args, **kwargs):
+        return super().create(request,*args,**kwargs)
+
+    def get_queryset(self):
+        user=self.request.user
+
+        return Todo.objects.filter(user=user)

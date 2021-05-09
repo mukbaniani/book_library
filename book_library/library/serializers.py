@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Book,History,Order,Branch
+from .models import Book,History,Order,Branch,Todo
 
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,3 +28,8 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model=Order
         fields = ['book', 'user', 'branch', 'start_date']
+
+class TodoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Todo
+        fields=['id','year','name','read']

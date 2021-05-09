@@ -94,3 +94,18 @@ class History(models.Model):
 
     class Meta:
         verbose_name_plural = 'მომხმარებლების ისტორია'
+
+def year_choices():
+    return [(y,y) for y in range(datetime.date.today().year, datetime.date.today().year+100)]
+
+def current_year():
+    return datetime.date.today().year
+
+class Todo(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    year=models.IntegerField(choices=year_choices(),default=current_year())
+    name=models.CharField(max_length=200)
+    read=models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
