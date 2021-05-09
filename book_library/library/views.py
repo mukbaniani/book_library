@@ -28,3 +28,9 @@ class OrderCreate(generics.CreateAPIView):
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
     permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)

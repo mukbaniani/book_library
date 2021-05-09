@@ -2,9 +2,13 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 import datetime
+from django.core.exceptions import ValidationError
+
 
 User = get_user_model()
 
+from .quantity_error import MyCustomExcpetion
+from rest_framework import status
 
 class Branch(models.Model):
     address=models.CharField(
@@ -57,9 +61,13 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         today = datetime.datetime.now()
         if not self.pk:
-            self.book.quantity-=1
-            self.book.save()
-            self.end_date = today + datetime.timedelta(days=14)
+            if self.book.quantity>0:
+                self.book.quantity-=1
+                self.book.save()
+                self.end_date = today + datetime.timedelta(days=14)
+            else:
+                raise MyCustomExcpetion(detail={"Error": "რაოდენობა ამოიწურა"}, status_code=status.HTTP_400_BAD_REQUEST)
+
         super(Order, self).save(*args, **kwargs)
 
     class Meta:

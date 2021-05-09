@@ -23,6 +23,7 @@ class HistorySerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     start_date = serializers.DateField(format="%Y-%m-%d")
+    user=serializers.StringRelatedField(default=serializers.CurrentUserDefault(), read_only=True)
 
     class Meta:
         model=Order
