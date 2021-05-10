@@ -27,9 +27,9 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Order
-        fields = ['book', 'user', 'branch', 'start_date']
+        fields = ['id','book', 'user', 'branch', 'start_date']
 
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model=Todo
-        fields=['id','year','name','read']
+        fields=['id','year','name','read','user']

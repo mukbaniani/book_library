@@ -77,6 +77,8 @@ REST_FRAMEWORK = {
         'post_anon': '10/minute'
     },
     'DEFAULT_FILTER_BACKENDS': ['rest_framework.filters.SearchFilter'],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 5,
 }
 
 WSGI_APPLICATION = 'book_library.wsgi.application'
