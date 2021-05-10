@@ -28,7 +28,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Order
-        fields = ['book', 'user', 'branch', 'start_date']
+        fields = ['id','book', 'user', 'branch', 'start_date']
 
 
 class CountUserReadAuthorsSerializer(serializers.Serializer):
