@@ -1,5 +1,6 @@
+from django.core.serializers import serialize
 from rest_framework import serializers
-from .models import Book,History,Order,Branch,Todo
+from .models import Book,History,Order,Branch,Todo, User
 
 class BookSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,7 +30,26 @@ class OrderSerializer(serializers.ModelSerializer):
         model=Order
         fields = ['book', 'user', 'branch', 'start_date']
 
+
+class CountUserReadAuthorsSerializer(serializers.Serializer):
+    count_authors = serializers.SerializerMethodField(
+        'get_count_authos'
+    )
+    authors = serializers.SerializerMethodField(
+        'get_author_name'
+    )
+
+    class Meta:
+        fields = ['count_authors', 'authors']
+
+    def get_count_authos(self, obj):
+        return obj.get('count_author')
+
+    def get_author_name(self, obj):
+        return obj.get('order__book__author')
+
+
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model=Todo
-        fields=['id','year','name','read']
+        fields=['user','year','name','read']

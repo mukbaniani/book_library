@@ -102,10 +102,14 @@ def current_year():
     return datetime.date.today().year
 
 class Todo(models.Model):
-    user=models.ForeignKey(User,on_delete=models.CASCADE)
-    year=models.IntegerField(choices=year_choices(),default=current_year())
-    name=models.CharField(max_length=200)
-    read=models.BooleanField(default=False)
+    user=models.ForeignKey(User,on_delete=models.CASCADE, verbose_name=_('მომხმარებელი'), blank=True, null=True)
+    year=models.IntegerField(choices=year_choices(),default=current_year(), verbose_name=_('წელი'))
+    name=models.CharField(max_length=200, verbose_name=_('წიგნის სახელი'))
+    read=models.BooleanField(default=False, verbose_name=_('დასრულება'))
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name_plural = _('თუდუ')
+        ordering = ['-id']
