@@ -1,10 +1,16 @@
 from django.contrib import admin
-from  .models import Branch, Book, Order,History,Todo
+from  .models import Branch, Book, Order,History, Todo, Quantity
 import datetime
+from django.db.models import F
 
 admin.site.index_title = 'ბიბლიოთეკარი'
 admin.site.site_header = 'ცოდვილების ჩათის ბიბლიოთეკა'
 admin.site.site_title = 'სამართავი პანელი'
+
+
+class InlineQuantity(admin.StackedInline):
+    model = Quantity
+
 
 @admin.register(Branch)
 class BranchAdminArea(admin.ModelAdmin):
@@ -18,10 +24,10 @@ class BranchAdminArea(admin.ModelAdmin):
 class BookAdminArea(admin.ModelAdmin):
     search_fields = ('name', 'author')
     list_per_page = 10
-    list_display = ('author', 'name', 'quantity')
+    inlines = [InlineQuantity]
+    list_display = ('author', 'name')
     list_display_links = ['author']
-    list_editable = ['name', 'quantity']
-    autocomplete_fields = ['branch']
+    list_editable = ['name']
     list_filter = ('author',)
     
 
@@ -44,5 +50,9 @@ class OrderAdminArea(admin.ModelAdmin):
     count_return_date.short_description = 'დაბრუნებდამდე დარჩა'
 
 
-admin.site.register(History)
-admin.site.register(Todo)
+@admin.register(History)
+class HistoryAdminArea(admin.ModelAdmin):
+    list_filter = ('return_book__branch',)
+
+
+admin.site.register([Todo, Quantity])

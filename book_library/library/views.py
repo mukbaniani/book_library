@@ -1,18 +1,26 @@
-from django.db.models.expressions import F
 from rest_framework import generics, permissions
-from .serializers import BookSerializer, HistorySerializer, OrderSerializer,TodoSerializer, CountUserReadAuthorsSerializer
-from .models import Book, History, Order,Todo, User
-from django.db.models import Count
+from .serializers import (BookSerializer, HistorySerializer, OrderSerializer,TodoSerializer, CountUserReadAuthorsSerializer,
+                    BookRetrieveSerializer)
+from .models import Book, History, Order, Quantity,Todo, User
+from django.db.models import Count, F
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from  .permissions import OrderDeletePermission
 
 
 class BookList(generics.ListAPIView):
     serializer_class = BookSerializer
     queryset = Book.objects.all()
     search_fields = ['name']
-    permission_classes = [permissions.IsAuthenticated]
-    pagination_class = PageNumberPagination
+
+
+class BookRetrieve(generics.ListAPIView):
+    serializer_class = BookRetrieveSerializer
+    
+    def get_queryset(self, *args, **kwargs):
+        book_id = self.kwargs.get('pk')
+        book = Quantity.objects.filter(book=book_id).all()
+        return book
 
 
 class HistoryView(generics.ListAPIView):
@@ -20,13 +28,10 @@ class HistoryView(generics.ListAPIView):
     queryset = History.objects.all()
     search_fields = ['return_book__name']
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = PageNumberPagination
 
 
 class PopularBook(generics.ListAPIView):
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         books = Book.objects.filter(
@@ -51,7 +56,6 @@ class OrderCreate(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
     permission_classes = [permissions.IsAuthenticated]
-    pagination_class = PageNumberPagination
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -63,30 +67,24 @@ class OrderCreate(generics.ListCreateAPIView):
         user=self.request.user
         return Order.objects.filter(user=user)
 
-class OrderDelete(generics.RetrieveUpdateDestroyAPIView):
+class OrderDelete(generics.RetrieveDestroyAPIView):
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
-    # lookup_field = 'pk'
+    permission_classes = [permissions.IsAuthenticated, OrderDeletePermission]
 
     def delete(self, request, *args,pk, **kwargs):
         order=self.get_object()
-        print(order.book.quantity) #quantity=994
-        order.book.quantity+=1
-        print(order.book.quantity) #quantity=995
-        order.save() #but not save
-        # order.delete()
-        return Response("delete")
-
-
+        order.book.quantity += 1
+        order.book.save()
+        order.delete()
+        return Response({"result": "delete"})
 
 
 class TodoCreate(generics.ListCreateAPIView):
     serializer_class = TodoSerializer
     queryset = Todo.objects.all()
     permission_classes = [permissions.IsAuthenticated]
-    search_fields=['name']
-    pagination_class = PageNumberPagination
+    search_fields = ['name']
 
     def create(self, request, *args, **kwargs):
         return super().create(request,*args,**kwargs)
@@ -94,4 +92,3 @@ class TodoCreate(generics.ListCreateAPIView):
     def get_queryset(self):
         user=self.request.user
         return Todo.objects.filter(user=user)
-
