@@ -76,13 +76,13 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         today = datetime.datetime.now()
         if not self.pk:
-            # if self.book.quantity > 0:
             book = self.branch.quantity_set.filter(book=self.book.id).first()
-            book.book_quantity -= 1
-            book.save()
-            self.end_date = today + datetime.timedelta(days=14)
-            # else:
-            #     raise MyCustomExcpetion(detail={"Error": "რაოდენობა ამოიწურა"}, status_code=status.HTTP_400_BAD_REQUEST)
+            if book.book_quantity > 0:
+                book.book_quantity -= 1
+                book.save()
+                self.end_date = today + datetime.timedelta(days=14)
+            else:
+                raise MyCustomExcpetion(detail={"Error": "რაოდენობა ამოიწურა"}, status_code=status.HTTP_400_BAD_REQUEST)
 
         super(Order, self).save(*args, **kwargs)
 
