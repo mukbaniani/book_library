@@ -10,16 +10,32 @@ class BookSerializer(serializers.ModelSerializer):
 
 
 class HistorySerializer(serializers.ModelSerializer):
+    return_time = serializers.BooleanField(
+        label=_('დაბრუნებულია მის დროზე ?'),
+        read_only=True
+    )
+    return_book = serializers.CharField(
+        label=_('წიგნი'),
+        read_only=True
+    )
+    condition = serializers.IntegerField(
+        label=_('დაბრუნებული წიგნის მდგომარეობა'),
+        read_only=True
+    )
+
     class Meta:
         model = History
-        fields = ['id','return_time','return_book','user','condition']
+        fields = ['id','return_time','return_book','condition']
 
 
-    def to_representation(self,instance):
-        rep=super(HistorySerializer,self).to_representation(instance)
-        rep['return_book'] = instance.return_book.name
-        rep['user'] = instance.user.passport_id
-        return rep
+class BranchSerializer(serializers.ModelSerializer):
+    book = serializers.StringRelatedField(
+        many=True
+    )
+
+    class Meta:
+        model = Branch
+        fields = ['id', 'address', 'work_day', 'tel_number', 'book']
 
 
 class OrderSerializer(serializers.ModelSerializer):
