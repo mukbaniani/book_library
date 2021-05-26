@@ -71,7 +71,7 @@ class Order(models.Model):
     status = models.BooleanField(verbose_name=_('სტატუსი'), default=False)
 
     def __str__(self):
-        return f'{self.book}, {self.branch}'
+        return f'წიგნი -> {self.book}, ფილიალი -> {self.branch}'
 
     def save(self, *args, **kwargs):
         today = datetime.datetime.now()

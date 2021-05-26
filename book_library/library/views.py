@@ -1,7 +1,7 @@
 from rest_framework import generics, permissions
 from .serializers import (BookSerializer, HistorySerializer, OrderSerializer,TodoSerializer, CountUserReadAuthorsSerializer,
-                    BookRetrieveSerializer)
-from .models import Book, History, Order, Quantity,Todo, User
+                    BookRetrieveSerializer, BranchSerializer)
+from .models import Book, Branch, History, Order, Quantity,Todo, User
 from django.db.models import Count, F
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
@@ -25,9 +25,22 @@ class BookRetrieve(generics.ListAPIView):
 
 class HistoryView(generics.ListAPIView):
     serializer_class = HistorySerializer
-    queryset = History.objects.all()
-    search_fields = ['return_book__name']
+    search_fields = ['return_book__book__name']
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = History.objects.filter(user=self.request.user).first()
+        return queryset
+
+
+class BranchList(generics.ListAPIView):
+    queryset = Branch.objects.all()
+    serializer_class = BranchSerializer
+
+
+class RetrieveBranch(generics.RetrieveAPIView):
+    serializer_class = BranchSerializer
+    queryset = Branch.objects.all()
 
 
 class PopularBook(generics.ListAPIView):
@@ -74,8 +87,9 @@ class OrderDelete(generics.RetrieveDestroyAPIView):
 
     def delete(self, request, *args,pk, **kwargs):
         order=self.get_object()
-        order.book.quantity += 1
-        order.book.save()
+        quantity = order.book.quantity_set.first()
+        quantity.book_quantity += 1
+        quantity.save()
         order.delete()
         return Response({"result": "delete"})
 
