@@ -89,3 +89,14 @@ class PasswordUpdate(generics.RetrieveUpdateAPIView):
             return HttpResponseRedirect(f'http://{current_site}/api/login/')
         except:
             return Response({'result': 'პაროლის განსაახლებელ ტოკენს დრო გაუვიდა სცადეთ თავიდან'})
+
+class DeleteAccount(generics.DestroyAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+
+    def delete(self, request, *args, **kwargs):
+        user=self.request.user
+        user.delete()
+
+        return Response({"result":"მომხარებელი წაიშალა"})

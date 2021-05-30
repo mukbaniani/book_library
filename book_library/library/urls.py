@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (BookList, HistoryView, PopularBook, OrderCreate,TodoCreate, 
-CountUserReadAuthors, OrderDelete, BookRetrieve, BranchList, RetrieveBranch)
+CountUserReadAuthors, OrderDelete, BookRetrieve, BranchList, RetrieveBranch,TodoUpdate)
 
 
 urlpatterns = [
@@ -13,5 +13,7 @@ urlpatterns = [
     path('count-read-author/', CountUserReadAuthors.as_view(), name='count-read-authors'),
     path('book-list/<int:pk>/', BookRetrieve.as_view(), name='retrieve-book'),
     path('branch-list/', BranchList.as_view(), name='branch-list'),
-    path('branch-list/<int:pk>/', RetrieveBranch.as_view(), name='branch-list')
+    path('branch-list/<int:pk>/', RetrieveBranch.as_view(), name='branch-list'),
+    path('updatetodo/<int:pk>/', TodoUpdate.as_view(), name='update-todo')
+
 ]

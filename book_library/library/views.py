@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from  .permissions import OrderDeletePermission
 
 
+
 class BookList(generics.ListAPIView):
     serializer_class = BookSerializer
     queryset = Book.objects.all()
@@ -105,3 +106,10 @@ class TodoCreate(generics.ListCreateAPIView):
     def get_queryset(self):
         user=self.request.user
         return Todo.objects.filter(user=user)
+
+class TodoUpdate(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = TodoSerializer
+    queryset = Todo.objects.all()
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
