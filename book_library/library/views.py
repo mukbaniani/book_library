@@ -4,7 +4,6 @@ from .serializers import (BookSerializer, HistorySerializer, OrderSerializer,Tod
 from .models import Book, Branch, History, Order, Quantity,Todo, User
 from django.db.models import Count, F
 from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination
 from  .permissions import OrderDeletePermission
 
 
@@ -29,12 +28,12 @@ class HistoryView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        queryset = History.objects.filter(user=self.request.user).first()
+        queryset = History.objects.filter(user=self.request.user).all()
         return queryset
 
 
 class BranchList(generics.ListAPIView):
-    queryset = Branch.objects.all()
+    queryset = Branch.objects.all().prefetch_related('book')
     serializer_class = BranchSerializer
 
 

@@ -10,25 +10,10 @@ from rest_framework.authtoken.models import Token
 from .email import Mail
 from .tokens import decode_reset_token
 from rest_framework import permissions
-
-
-class UserPermissions(permissions.BasePermission):
-    
-    def has_permission(self, request, view):
-        return not bool(request.user.is_authenticated)
-
-
-class PostAnononymousRateThrottle(throttling.AnonRateThrottle):
-    scope = 'post_anon'
-
-    def allow_request(self, request, view):
-        if request.method == "GET":
-            return True
-        return super().allow_request(request, view)
+from .utils import UserPermissions, PostAnononymousRateThrottle
 
 
 class Registration(generics.CreateAPIView):
-    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [UserPermissions]
 
@@ -64,7 +49,6 @@ class Logout(APIView):
 
 
 class PasswordResetRequest(generics.CreateAPIView):
-    queryset = User.objects.all()
     serializer_class = PasswordResetRequestSerializer
     permission_classes = [UserPermissions]
 
@@ -81,7 +65,6 @@ class PasswordResetRequest(generics.CreateAPIView):
 
 class PasswordUpdate(generics.RetrieveUpdateAPIView):
     serializer_class = PasswordReset
-    queryset = User.objects.all()
     permission_classes = [UserPermissions]
 
     def get(self, request, *args, **kwargs):
