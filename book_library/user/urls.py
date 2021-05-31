@@ -4,8 +4,10 @@ from .views import Registration, Login, Logout, PasswordResetRequest, PasswordUp
 urlpatterns = [ 
     path('register/', Registration.as_view(), name='user-registration'),
     path('login/', Login.as_view(), name='login-user'),
+    path('deleteuser/',DeleteAccount.as_view(), name="delete-user"),
     path('logout/', Logout.as_view(), name='logout-user'),
     path('password/reset/request/', PasswordResetRequest.as_view(), name='password-reset'),
     path('<str:uidb64>/', PasswordUpdate.as_view(), name='password-update'),
-    path('deleteuser/',DeleteAccount.as_view(), name="delete-user")
+
+
 ]

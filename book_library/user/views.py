@@ -4,13 +4,17 @@ from rest_framework import generics, status
 from rest_framework import throttling
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import PasswordReset, PasswordResetRequestSerializer, UserSerializer, LoginSerializer
+from .serializers import PasswordReset, PasswordResetRequestSerializer, UserSerializer, LoginSerializer,PasswordCheck
 from .models import User
 from rest_framework.authtoken.models import Token
 from .email import Mail
 from .tokens import decode_reset_token
 from rest_framework import permissions
 from .utils import UserPermissions, PostAnononymousRateThrottle
+from django.contrib.auth.hashers import check_password
+
+
+
 
 
 class Registration(generics.CreateAPIView):
@@ -91,12 +95,23 @@ class PasswordUpdate(generics.RetrieveUpdateAPIView):
             return Response({'result': 'პაროლის განსაახლებელ ტოკენს დრო გაუვიდა სცადეთ თავიდან'})
 
 class DeleteAccount(generics.DestroyAPIView):
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
+    serializer_class = PasswordCheck
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    def post(self, request, *args, **kwargs):
+        user=self.get_object()
+        password=self.request.data.get('password')
+
+        if check_password(password,self.request.user.password):
+            user.delete()
+            return Response({"result":"მომხარებელი წაიშალა"})
+        else:
+            return Response({"result": "პაროლი არასწორია"})
 
 
-    def delete(self, request, *args, **kwargs):
-        user=self.request.user
-        user.delete()
 
-        return Response({"result":"მომხარებელი წაიშალა"})
+
+

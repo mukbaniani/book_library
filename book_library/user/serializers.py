@@ -128,3 +128,6 @@ class PasswordReset(serializers.Serializer):
             error_message = 'პაროლის ველის შევსება აუცილებელია'
             raise serializers.ValidationError(error_message)
         return attrs
+
+class PasswordCheck(serializers.Serializer):
+    password=serializers.CharField(style = {'input_type': 'password'})
